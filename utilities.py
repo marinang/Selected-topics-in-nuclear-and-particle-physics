@@ -8,8 +8,8 @@ from ipywidgets import interact, fixed
 mpl.rcParams["figure.figsize"] = (10, 6)
 mpl.rcParams["legend.fontsize"] = 14
 
-d21 = 7.53E-05 # in eV^2
-d32 = 2.51E-03
+d21 = 7.37E-05 # in eV^2
+d32 = 2.54E-03
 d31 = d32 + d21
 
 dm2 = [d21, d31, d32]
@@ -31,8 +31,8 @@ def PMNS(t12, t13, t23):
 
 
 
-def plot_compare(prob_survival_exo4, posc):
-    def plot(L, E, t13=0, log=True, t12=t12, t23=t23, dm2=dm2):
+def plot_compare(prob_survival_exo4, posc, xlabel, x=None, ybounds=(0,1.)):
+    def plot(L, E, t13=0, log=False, t12=t12, t23=t23, dm2=dm2):
         U = PMNS(t12, t13, t23)
         fig, ax = plt.subplots()
         
@@ -40,13 +40,18 @@ def plot_compare(prob_survival_exo4, posc):
             func = ax.semilogx
         else:
             func = ax.plot
+            
+        if x is None:
+            x_ = LE
+        else:
+            x_ = x
         
         ax.set_ylim(0,1.35)
-        ax.set_xlim(np.min(E), np.max(E))
-        ax.set_xlabel(r"$E_\nu [MeV]$")
+        ax.set_xlim(np.min(x), np.max(x))
+        ax.set_xlabel(xlabel)
         ax.set_ylabel(r"Probability $\nu_e \rightarrow \nu_e$")
-        func(E, prob_survival_exo4(dm2[0], t12, L/E), label=f"L = {L} km\n"+r"$P_{ee} = 1 -\sin^2 2\theta_{12}\sin^2(\Delta m^2_{12}L/4E_\nu)$")
-        func(E, posc(0, 0, U, dm2, L/E), label="$P_{ee} = |<v_{e}|U|v_{e}>|^2$")
+        func(x_, prob_survival_exo4(dm2[0], t12, L/E), label=f"E = {E} GeV\n"+r"$P_{ee} = 1 -\sin^2 2\theta_{12}\sin^2(\Delta m^2_{12}L/4E_\nu)$")
+        func(x_, posc(0, 0, U, dm2, L/E), label="$P_{ee} = |<v_{e}|U|v_{e}>|^2$")
         plt.legend(loc="best")
         plt.grid()
         plt.show()
